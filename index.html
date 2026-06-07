@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNAKE</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"></link/>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Title -->
+  <div class="title">SNAKE</div>
+  <div class="subtitle">◈ CLASSIC ARCADE BY LUTH(V) ◈</div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat">
+      <span class="stat-label">SCORE</span>
+      <span class="stat-value" id="scoreDisplay">0</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">NYAWA</span>
+      <div class="lives-display" id="livesDisplay">
+        <span class="heart">♥</span>
+        <span class="heart">♥</span>
+        <span class="heart">♥</span>
+        <span class="heart">♥</span>
+        <span class="heart">♥</span>
+      </div>
+    </div>
+    <div class="stat">
+      <span class="stat-label">LEVEL</span>
+      <span class="stat-value" id="levelDisplay">1</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">BEST</span>
+      <span class="stat-value" id="bestDisplay">0</span>
+    </div>
+  </div>
+
+  <!-- Canvas -->
+  <div class="canvas-wrap" id="canvasWrap">
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <canvas id="particleCanvas" width="400" height="400"></canvas>
+
+    <!-- MENU Overlay -->
+    <div class="overlay active" id="menuOverlay">
+      <div class="overlay-title">SNAKE</div>
+      <div class="overlay-sub">◈ CLASSIC ARCADE EDITION ◈</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--text);opacity:0.5;letter-spacing:0.1em;text-align:center;line-height:1.8">
+        🍎 Makan apel → skor naik<br>
+        💥 Tabrak diri → nyawa berkurang<br>
+        🧱 Dinding → belok otomatis random<br>
+        ❤️ 5 nyawa total
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="sfxClick();startGame()">▶ MULAI</button>
+        <button class="btn btn-danger" onclick="sfxClick();exitGame()">✕ KELUAR</button>
+      </div>
+    </div>
+
+    <!-- PAUSE Overlay -->
+    <div class="overlay" id="pauseOverlay">
+      <div class="overlay-title">PAUSE</div>
+      <div class="overlay-sub">GAME DIJEDA</div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="sfxClick();togglePause()">▶ LANJUT</button>
+        <button class="btn btn-danger" onclick="quitToMenu()">⟵ MENU</button>
+      </div>
+    </div>
+
+    <!-- GAME OVER Overlay -->
+    <div class="overlay" id="gameOverOverlay">
+      <div class="overlay-title" style="color:var(--danger);text-shadow:var(--glow-red)">GAME OVER</div>
+      <div class="overlay-sub" id="gameOverSub">NYAWA HABIS</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text);opacity:0.5;letter-spacing:0.1em">SKOR AKHIR</div>
+      <div class="overlay-score" id="finalScore">0</div>
+      <div class="best-row" id="newBestRow" style="display:none">
+        <span style="font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);opacity:0.8">🏆 REKOR BARU!</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="sfxClick();startGame()">↺ MAIN LAGI</button>
+        <button class="btn btn-secondary" onclick="quitToMenu()">⟵ MENU</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Controls Bar -->
+  <div class="game-controls-bar">
+    <button class="btn-pause" id="pauseBtn" onclick="togglePause()">⏸ PAUSE</button>
+    <span class="speed-display" id="speedDisplay">SPEED: 1</span>
+    <button class="btn-mute" id="muteBtn" onclick="toggleMute()" title="Mute/Unmute">🔊</button>
+    <button class="btn-quit" onclick="sfxClick();quitToMenu()">✕ KELUAR</button>
+  </div>
+
+  <!-- D-Pad -->
+  <div class="dpad-section">
+    <div class="dpad">
+      <!-- Row 1 -->
+      <div class="dpad-btn dpad-empty"></div>
+      <div class="dpad-btn" id="btn-up" onpointerdown="pressDir('UP')" onpointerup="releaseDir('UP')">
+        <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+      </div>
+      <div class="dpad-btn dpad-empty"></div>
+      <!-- Row 2 -->
+      <div class="dpad-btn" id="btn-left" onpointerdown="pressDir('LEFT')" onpointerup="releaseDir('LEFT')">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <div class="dpad-center">
+        <div class="dpad-center-dot"></div>
+      </div>
+      <div class="dpad-btn" id="btn-right" onpointerdown="pressDir('RIGHT')" onpointerup="releaseDir('RIGHT')">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <!-- Row 3 -->
+      <div class="dpad-btn dpad-empty"></div>
+      <div class="dpad-btn" id="btn-down" onpointerdown="pressDir('DOWN')" onpointerup="releaseDir('DOWN')">
+        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="dpad-btn dpad-empty"></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

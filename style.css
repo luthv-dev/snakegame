@@ -1,0 +1,453 @@
+:root {
+    --bg: #0a0e1a;
+    --panel: #0f1628;
+    --border: #1e2d50;
+    --accent: #00e5ff;
+    --accent2: #39ff14;
+    --danger: #ff2d55;
+    --gold: #ffd700;
+    --dim: #1a2540;
+    --text: #c8deff;
+    --snake-head: #39ff14;
+    --snake-body: #00c853;
+    --apple: #ff2d55;
+    --glow-green: 0 0 12px #39ff14, 0 0 24px #00c85380;
+    --glow-cyan: 0 0 12px #00e5ff, 0 0 24px #00e5ff60;
+    --glow-red: 0 0 12px #ff2d55, 0 0 24px #ff2d5560;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', monospace;
+    overflow: hidden;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    max-width: 440px;
+    padding: 16px;
+  }
+
+  /* ── TITLE ── */
+  .title {
+    font-size: 2.6rem;
+    font-weight: 900;
+    letter-spacing: 0.25em;
+    color: var(--accent2);
+    text-shadow: var(--glow-green);
+    text-align: center;
+    margin-bottom: 6px;
+    animation: flicker 4s infinite;
+  }
+  .subtitle {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.3em;
+    text-align: center;
+    opacity: 0.7;
+    margin-bottom: 14px;
+  }
+
+  @keyframes flicker {
+    0%,100%{opacity:1} 92%{opacity:1} 93%{opacity:0.7} 94%{opacity:1} 96%{opacity:0.85} 97%{opacity:1}
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 14px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .stat-label {
+    font-size: 0.48rem;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    opacity: 0.6;
+  }
+  .stat-value {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--text);
+    font-weight: 700;
+  }
+  .lives-display {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .heart {
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    filter: drop-shadow(0 0 4px #ff2d55);
+  }
+  .heart.lost {
+    opacity: 0.2;
+    filter: none;
+  }
+
+  /* ── GAME CANVAS CONTAINER ── */
+  .canvas-wrap {
+    position: relative;
+    width: 100%;
+    background: #060c1a;
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 0 1px var(--border), inset 0 0 60px rgba(0,229,255,0.04), var(--glow-cyan);
+    overflow: hidden;
+  }
+
+  #gameCanvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    image-rendering: pixelated;
+  }
+
+  /* ── OVERLAYS ── */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(6,12,26,0.92);
+    backdrop-filter: blur(4px);
+    gap: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 10;
+  }
+  .overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .overlay-title {
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    color: var(--accent2);
+    text-shadow: var(--glow-green);
+    text-align: center;
+  }
+  .overlay-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    opacity: 0.7;
+    text-align: center;
+  }
+  .overlay-score {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 2rem;
+    color: var(--gold);
+    text-shadow: 0 0 16px var(--gold);
+    text-align: center;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    padding: 10px 22px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+  }
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    transition: opacity 0.1s;
+  }
+  .btn:active::after { opacity: 0.1; }
+
+  .btn-primary {
+    background: var(--accent2);
+    color: #060c1a;
+    box-shadow: var(--glow-green);
+  }
+  .btn-primary:hover {
+    background: #50ff24;
+    box-shadow: 0 0 20px #39ff14, 0 0 40px #39ff1460;
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    box-shadow: var(--glow-cyan);
+  }
+  .btn-secondary:hover {
+    background: rgba(0,229,255,0.1);
+    transform: translateY(-1px);
+  }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    box-shadow: var(--glow-red);
+  }
+  .btn-danger:hover {
+    background: rgba(255,45,85,0.1);
+    transform: translateY(-1px);
+  }
+
+  /* ── GAME CONTROLS BAR ── */
+  .game-controls-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 14px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-bottom: none;
+    gap: 10px;
+  }
+
+  .btn-pause {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 7px 16px;
+    border-radius: 4px;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.15s;
+    min-width: 90px;
+    text-align: center;
+  }
+  .btn-pause:hover {
+    background: rgba(0,229,255,0.1);
+  }
+  .btn-pause.paused {
+    border-color: var(--accent2);
+    color: var(--accent2);
+    box-shadow: var(--glow-green);
+  }
+
+  .speed-display {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    opacity: 0.6;
+    letter-spacing: 0.1em;
+  }
+
+  .btn-quit {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 7px 16px;
+    border-radius: 4px;
+    border: 1px solid var(--danger);
+    background: transparent;
+    color: var(--danger);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-quit:hover {
+    background: rgba(255,45,85,0.1);
+  }
+
+  .btn-mute {
+    font-size: 1rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 5px 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+  .btn-mute:hover { border-color: var(--accent); background: rgba(0,229,255,0.08); }
+  .btn-mute.muted { opacity: 0.45; }
+
+  /* ── D-PAD CONTROLS ── */
+  .dpad-section {
+    width: 100%;
+    padding: 14px 0 12px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .dpad {
+    display: grid;
+    grid-template-columns: 54px 54px 54px;
+    grid-template-rows: 54px 54px 54px;
+    gap: 4px;
+    position: relative;
+  }
+
+  .dpad-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    background: var(--dim);
+    cursor: pointer;
+    transition: all 0.08s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    position: relative;
+    overflow: hidden;
+  }
+  .dpad-btn:hover {
+    border-color: var(--accent);
+    background: rgba(0,229,255,0.08);
+  }
+  .dpad-btn:active,
+  .dpad-btn.pressed {
+    background: rgba(0,229,255,0.2);
+    border-color: var(--accent2);
+    box-shadow: var(--glow-green);
+    transform: scale(0.93);
+  }
+  .dpad-btn svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+    transition: stroke 0.08s;
+  }
+  .dpad-btn:active svg,
+  .dpad-btn.pressed svg {
+    stroke: var(--accent2);
+  }
+
+  .dpad-center {
+    background: var(--dim);
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .dpad-center-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+
+  /* hide empty corners */
+  .dpad-empty { background: transparent; border: none !important; pointer-events: none; }
+
+  /* ── BEST SCORE ── */
+  .best-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .best-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    opacity: 0.6;
+  }
+  .best-value {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--gold);
+    text-shadow: 0 0 8px var(--gold);
+  }
+
+  /* ── DEATH FLASH ── */
+  @keyframes deathFlash {
+    0%{background:rgba(255,45,85,0.3)} 100%{background:transparent}
+  }
+  .canvas-wrap.flash {
+    animation: deathFlash 0.4s ease-out;
+  }
+
+  /* ── PARTICLE canvas ── */
+  #particleCanvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* scrolling ticker on menu */
+  .ticker {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--accent);
+    opacity: 0.4;
+    letter-spacing: 0.15em;
+    text-align: center;
+    margin-top: -4px;
+  }
